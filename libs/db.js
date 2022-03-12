@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 module.exports = function () {
-    module.db = require("./libs/json/db.json");
+    module.db = require("./json/db.json");
 
     module.set = async function set(table, row, column) {
         return new Promise((resolve, reject) => {

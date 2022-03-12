@@ -2,7 +2,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 module.exports = (client) => {
-    client.config = require("./config.json");
+    client.config = require("./json/config.json");
 
     client.logger = function logger(msg) {
         let logMessage = `[${new Date().getTime()}] ${msg}`;

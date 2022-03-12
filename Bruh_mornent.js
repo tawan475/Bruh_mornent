@@ -4,7 +4,8 @@ process.on('uncaughtException', function (exception) {
 require('dotenv').config();
 
 const tmi = require('tmi.js');
-const fs = require("fs");
+const path = require('path');
+const fs = require('fs');
 
 const client = new tmi.Client({
     options: { debug: false },
@@ -18,15 +19,14 @@ const client = new tmi.Client({
     },
     channels: [ "tawan475" ]
 });
-client.db = require('./db.js')();
+client.db = require('./libs/db.js')();
 
-require('./globalFunction.js')(client);
-
-require('./webserver.js')({ client });
+require('./libs/globalFunction.js')(client);
+require('./libs/webserver.js')({ client });
 
 client.connect();
 
-require('./loader.js')(client, [
-    './eventHandlers',
-    './commands'
+require('./libs/loader.js')(client, [
+    path.join(__dirname, './eventHandlers'),
+    path.join(__dirname, './commands')
 ]);
