@@ -1,0 +1,15 @@
+!help - Get this image.
+!discord - Get a link to the discord server.
+!credit - See your current credits.
+          Send bits to get more credits,
+          1 bit = 1 credit.
+          ( 1.5x credits if you're subbed!)
+
+!mediashare <Youtube Url> [ Length ] [Start_at]
+            < Required  > [Optional] [Optional]
+            <Url/VideoId> [InSecond] [InSecond]
+         10 bits per second of video time,
+         If length is not specified use all credits
+         or until the end of the video.
+
+

@@ -1,0 +1,23 @@
+{
+  "name": "Bruh_mornent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Bruh_mornent.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tawan475",
+  "license": "MIT License",
+  "dependencies": {
+    "body-parser": "^1.19.2",
+    "compression": "^1.7.4",
+    "discord.js": "^13.5.0",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "express-minify-html-2": "^1.0.1",
+    "socket.io": "^4.4.1",
+    "tmi.js": "^1.8.5",
+    "ytdl-core": "^4.11.0"
+  }
+}
