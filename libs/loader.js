@@ -2,8 +2,8 @@ const fs = require('fs');
 
 module.exports = (client, paths = []) => {
     paths.forEach(path => {
-        let arr = path.split("/");
-        let folder = arr[1];
+        let arr = path.split("\\");
+        let folder = arr[arr.length - 1];
         client[folder] = {};
 
         let commandFile = fs.readdirSync(path).filter(file => file.endsWith(".js"));
