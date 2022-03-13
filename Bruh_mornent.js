@@ -19,6 +19,7 @@ const client = new tmi.Client({
     },
     channels: [ "tawan475" ]
 });
+client.dirname = __dirname;
 client.db = require('./libs/db.js')();
 
 require('./libs/globalFunction.js')(client);
@@ -27,6 +28,6 @@ require('./libs/webserver.js')({ client });
 client.connect();
 
 require('./libs/loader.js')(client, [
-    path.join(__dirname, './eventHandlers'),
-    path.join(__dirname, './commands')
+    path.join(client.dirname, './eventHandlers'),
+    path.join(client.dirname, './commands')
 ]);

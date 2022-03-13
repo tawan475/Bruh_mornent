@@ -7,6 +7,8 @@ module.exports = ({ client }) => {
     
     client.app = express();
     const app = client.app;
+    app.client = client
+    
     const server = require('http').createServer(app);
     
     app.io = new socketIO.Server(server);
