@@ -1,161 +1,184 @@
 <!DOCTYPE html>
 <html>
-  <body>
+
+<body>
+    <!-- Edited from https://developers.google.com/youtube/iframe_api_reference#Getting_Started -->
     <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <table id="mediashare" style="border-collapse: collapse;" border="0" cellspacing="0" cellpadding="0">
         <tbody>
             <tr>
-                <td colspan="2"><div id="player"></div></td>
+                <td colspan="2">
+                    <div id="player"></div>
+                </td>
             </tr>
             <tr>
                 <td colspan="2">
                     <div id="myProgress" style="z-index: -2; position: relative; background-color: #ddd; width: 100%;">
-                        <div id="status" style="position: absolute; font-size: 20px;  vertical-align: top;" ></div>
+                        <div id="status" style="position: absolute; font-size: 20px;  vertical-align: top;"></div>
                         <div id="myBar" style="z-index: -1; background-color: #4CAF50; width: 0px; height: 35px;"></div>
                     </div>
                 </td>
             </tr>
         </tbody>
     </table>
-    
+
     <script src="/socket.io.js"></script>
     <script>
-      console.clear();
-      var defaultVideoId = 'Gox89RUmano';
-      var videoData = { 
-          videoId: defaultVideoId, 
-          havePlayed: true, 
-          startSeconds: 0, 
-          endSeconds: 0
-      };
-      
-      // 2. This code loads the IFrame Player API code asynchronously.
-      var tag = document.createElement('script');
+        console.clear(); // clear console for debugging
+        var mediaiframe = document.getElementById("mediashare");
+        var defaultVideoId = 'Gox89RUmano'; // empty video id, not supposed to be shown
+        var videoData = {
+            videoId: defaultVideoId,
+            havePlayed: true,
+            startSeconds: 0,
+            endSeconds: 0
+        };
 
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        // 2. This code loads the IFrame Player API code asynchronously.
+        var tag = document.createElement('script');
 
-      // 3. This function creates an <iframe> (and YouTube player)
-      //    after the API code downloads.
-      var player;
-      function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-          width: '854',
-          height: '480',
-          videoId: defaultVideoId,
-          playerVars: {
-            'enablejsapi': 1,
-            
-            //'mute': 1,
-            'fullscreen': 1
-          },
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange,
-            'onError': onPlayerError
-          }
-        });
-      }
-      hidePlayer()
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-      var progressBarInterval;
-      function onPlayerReady(event) {
-        // stopVideo();
-        event.target.setVolume(10);
-        // start progress bar
-        // limit to about 60 frames
-        // progressBarInterval = setInterval(updateProgressBar, 16.5);
-      }
+        // 3. This function creates an <iframe> (and YouTube player)
+        //    after the API code downloads.
+        var player;
 
-      
-      function onPlayerStateChange(event) {
-        switch(event.data) {
-          case YT.PlayerState.ENDED: // state = 0
-            clearInterval(progressBarInterval);
-            hidePlayer();
-            playNextVideo()
-            break;
-            
-          case YT.PlayerState.PLAYING: // state = 1
-            videoData.havePlayed = true;
-            progressBarInterval = setInterval(updateProgressBar, 16.5);
-            showPlayer();
-            break;
-            
-          case YT.PlayerState.PAUSED: // state = 2
-            clearInterval(progressBarInterval);
-            break;
-            
-          case YT.PlayerState.BUFFERING: // state = 3
-            clearInterval(progressBarInterval);
-            break;
-            
-          case YT.PlayerState.CUED: // state = 5
-            if (videoData.havePlayed || videoData.videoId == defaultVideoId){
-                hidePlayer();
-                break;
-            }
-            clearInterval(progressBarInterval);
-            event.target.playVideo();
-            break;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                width: '854',
+                height: '480',
+                // 480p resolution
+                videoId: defaultVideoId,
+                playerVars: {
+                    'enablejsapi': 1,
+
+                    //'mute': 1, // muted by default,
+                    // browsers will not autoplay unmuted video,
+                    // however obs does.
+                    'fullscreen': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
         }
-      }
-      
-      function stopVideo() {
-        player.stopVideo();
-      }
+        hidePlayer();
+        // only show player if there are video playing
 
-      function hidePlayer() {
-        let mediaiframe = document.getElementById("mediashare");
-        mediaiframe.style.display = "none";
-      }
+        var progressBarInterval;
 
-      function showPlayer(){
-        let mediaiframe = document.getElementById("mediashare");
-        mediaiframe.style.display = "block";
-      }
-      
-      function onPlayerError(event) {
-        console.log(event)
-      }
-      
-      function updateProgressBar(){
-          var elem = document.getElementById("myBar");
-          var start = player.getCurrentTime() - videoData.startSeconds;
-          var end = videoData.endSeconds - videoData.startSeconds;
-          var width = (start / end) * 100;
-          if (width <= 100) {
-            document.getElementById("status").textContent = `${videoData.videoTitle} - Requested by ${videoData.requestor} | ${Math.floor(((100 - width)/100) * parseInt(videoData.credits))} credits`;
-            elem.style.width = width + '%';
-          }
-      }
-      
-      var queue = [];
-      
-      function playNextVideo(){
-        let state = player.getPlayerState();
-        if (state === 1 ||
-            state === 2 ||
-            videoData.havePlayed === false) return
-        let mediashare = queue.shift();
-        if (!mediashare) return 
-        
-        Object.assign(videoData, mediashare, { havePlayed: false });
-        document.getElementById("status").textContent = `${videoData.videoTitle} - Requested by ${videoData.requestor} - ${videoData.credits} credits`;
-        player.cueVideoById(mediashare)
-      }
-      
-      var socket = io({ extraHeaders: { "service": "mediashare" } });
-      socket.on('mediashare', function(mediashare) {
-        queue.push(mediashare);
-        
-        let state = player.getPlayerState();
-        if (state !== -1 &&
-            state !==  1 &&
-            state !==  2 ||
-            state === undefined) playNextVideo()
-      });
+        function onPlayerReady(event) {
+            event.target.setVolume(10);
+        }
+
+
+        function onPlayerStateChange(event) {
+            switch (event.data) {
+                case YT.PlayerState.ENDED: // state = 0
+                    clearInterval(progressBarInterval);
+                    hidePlayer();
+                    playNextVideo()
+                    break;
+
+                case YT.PlayerState.PLAYING: // state = 1
+                    videoData.havePlayed = true;
+                    progressBarInterval = setInterval(updateProgressBar, 16.5);
+                    // start updating progress bar, at about 60 fps.
+                    showPlayer();
+                    break;
+
+                case YT.PlayerState.PAUSED: // state = 2
+                    clearInterval(progressBarInterval);
+                    break;
+
+                case YT.PlayerState.BUFFERING: // state = 3
+                    clearInterval(progressBarInterval);
+                    break;
+
+                case YT.PlayerState.CUED: // state = 5
+                    if (videoData.havePlayed || videoData.videoId == defaultVideoId) {
+                        hidePlayer();
+                        break;
+                    }
+                    clearInterval(progressBarInterval);
+                    event.target.playVideo();
+                    break;
+            }
+        }
+
+        function stopVideo() {
+            player.stopVideo();
+        }
+
+        function hidePlayer() {
+            mediaiframe.style.display = "none";
+        }
+
+        function showPlayer() {
+            mediaiframe.style.display = "block";
+        }
+
+        function onPlayerError(event) {
+            console.log(event);
+        }
+
+        // this can be configure to update at any interval
+        // lower the interval to save CPU usage
+        // this is set at about 60 fps at YT.PlayerState.PLAYING
+        function updateProgressBar() {
+            var elem = document.getElementById("myBar");
+            var start = player.getCurrentTime() - videoData.startSeconds;
+            var end = videoData.endSeconds - videoData.startSeconds;
+            var progress = (start / end) * 100;
+            if (progress <= 100) {
+                document.getElementById("status").textContent =
+                    `${videoData.videoTitle} - Requested by ${videoData.requestor} | ${Math.floor(((100 - progress)/100) * parseInt(videoData.credits))} credits`;
+                elem.style.width = progress + '%';
+            }
+        }
+
+        var queue = [];
+
+        function playNextVideo() {
+            let state = player.getPlayerState();
+            if (state === 1 ||
+                state === 2 ||
+                videoData.havePlayed === false) return;
+            // make sure that no video are playing or buffering and video have been played
+            let mediashare = queue.shift();
+            if (!mediashare) return;
+
+            Object.assign(videoData, mediashare, {
+                havePlayed: false
+            });
+
+            document.getElementById("status").textContent =
+                `${videoData.videoTitle} - Requested by ${videoData.requestor} - ${videoData.credits} credits`;
+            player.cueVideoById(mediashare);
+        }
+
+        var socket = io({
+            extraHeaders: {
+                "service": "mediashare"
+            }
+        });
+
+        socket.on('mediashare', function (mediashare) {
+            queue.push(mediashare);
+
+            let state = player.getPlayerState();
+            if (state !== -1 &&
+                state !== 1 &&
+                state !== 2 ||
+                state === undefined) playNextVideo();
+            // make sure that this will only call to play the next video
+            // if the play is not doing anything
+        });
     </script>
-  </body>
+</body>
+
 </html>
