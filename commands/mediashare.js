@@ -20,12 +20,13 @@ module.exports = (client) => {
         let videoLength = details.lengthSeconds;
 
         let playlength = parseInt(videoLength);
-        if (args[1] && (!isNaN(args[1]) && !isNaN(parseInt(args[1])) ) ) playlength = parseInt(args[1]);
-        if (playlength <= 0 || playlength > videoLength || startAt < 0 || startAt >= videoLength) return client.say(channel, `${user.username}, Malformed command. try refer to !help`);
-        if (Math.floor(credit.credit/10) <= playlength) {
+        if (args[1] && (!isNaN(args[1]) && !isNaN(parseInt(args[1])) ) ) playlength = parseInt(args[1]);        
+        if (Math.floor(credit.credit/10) < playlength) {
             if (args[1]) return client.say(channel, `${user.username}, You dont have enuogh credits to play the entire video.`);
             if (!args[1]) playlength = Math.floor(credit.credit/10);
         }
+        
+        if (playlength <= 0 || playlength > videoLength || startAt < 0 || startAt >= videoLength) return client.say(channel, `${user.username}, Malformed command. try refer to !help`);
 
         let videoId = details.videoId;
 
