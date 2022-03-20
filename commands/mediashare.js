@@ -6,7 +6,7 @@ module.exports = (client) => {
     module.execute = async function execute(channel, user, msg, IsSelf, args) {
         if (!args || !args.length || !args[0]) return client.say(channel, `${user.username}, Malformed command. try refer to !help`)
         let credit = await client.db.get("credit", user.username);
-        if (!credit) return client.say(channel, `${user.username}, You do not have any credits, try !credit`);
+        if (!credit || !credit.credit) return client.say(channel, `${user.username}, You do not have any credits, try !credit`);
 
         var YTUrl = args[0];
         if (!ytdl.validateID(YTUrl) && !ytdl.validateURL(YTUrl)) return client.say(channel, `${user.username}, Not a valid youtube URL/VideoId.`);
@@ -22,7 +22,7 @@ module.exports = (client) => {
         let playlength = parseInt(videoLength);
         if (args[1] && (!isNaN(args[1]) && !isNaN(parseInt(args[1])) ) ) playlength = parseInt(args[1]);
         if (playlength <= 0 || playlength > videoLength || startAt < 0 || startAt >= videoLength) return client.say(channel, `${user.username}, Malformed command. try refer to !help`);
-        if (Math.floor(credit.credit/10) < playlength) {
+        if (Math.floor(credit.credit/10) <= playlength) {
             if (args[1]) return client.say(channel, `${user.username}, You dont have enuogh credits to play the entire video.`);
             if (!args[1]) playlength = Math.floor(credit.credit/10);
         }
