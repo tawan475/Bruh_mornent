@@ -62,7 +62,7 @@ module.exports = ({ client }) => {
         res.status(404).send("404,  Not Found.");
     });
 
-    server.listen(80, () => {
+    server.listen(8080, () => {
         app.logger(`listening at HTTP`)
     });
 }
