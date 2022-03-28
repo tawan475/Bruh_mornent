@@ -7,6 +7,7 @@ module.exports = (client) => {
         if (user['message-type'] !== "chat") return;
         
         if (msg.toLowerCase().includes(" followers, primes and viewers on ")) {
+            client.logger(`Banned ${user.username} for Bot advertisment.`);
             return client.ban(channel, user.username, "Bot Advertisement.");
         }
         
