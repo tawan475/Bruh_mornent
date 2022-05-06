@@ -3,8 +3,11 @@ module.exports = (client) => {
     module.cooldown = 3000;
 
     module.execute = async function execute(channel, user, msg, IsSelf, args) {
-        let credit = await client.db.get("credit", user.username);
-        if (!credit || credit.credit == 0) return client.say(channel, `${user.username}, You have 0 credits, send bits to get more credits! For more infomation: !help`);
+        let toCheck = args[0] || user.username;
+
+        let credit = await client.db.get("credit", toCheck);
+        if (!credit) return client.say(channel, `${user.username}, No data for this username.`);
+        if (credit.credit == 0) return client.say(channel, `${user.username}, You have 0 credits, send bits to get more credits! For more infomation: !help`);
         return client.say(channel, `${user.username}, You have ${credit.credit} credits. For more infomation: !help`);
     }
 
