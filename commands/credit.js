@@ -8,7 +8,7 @@ module.exports = (client) => {
         let credit = await client.db.get("credit", toCheck);
         if (!credit) return client.say(channel, `${user.username}, No data for ${toCheck}.`);
         if (credit.credit == 0) return client.say(channel, `${toCheck}, You have 0 credits, send bits to get more credits! For more infomation: !help`);
-        return client.say(channel, `${user.username}, ${toCheck} have ${credit.credit} credits. For more infomation: !help`);
+        return client.say(channel, `${user.username}, ${toCheck} have ${credit.credit} credits.`);
     }
 
     return module;
