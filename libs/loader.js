@@ -9,7 +9,13 @@ module.exports = (client, paths = []) => {
         let commandFile = fs.readdirSync(path).filter(file => file.endsWith(".js"));
         for (const file of commandFile) {
             const filePath = path + "/" + file;
-            const toLoad = require(filePath)(client);
+            let toLoad;
+            try {
+                toLoad = require(filePath)(client);
+            } catch {
+                console.log(`Failed to load ${filePath}`);
+            }
+            
             let filename = file.replace(/\.js$/, "");
 
             let fileHASH = client.HASH(fs.readFileSync(filePath));
