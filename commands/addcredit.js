@@ -5,11 +5,11 @@ module.exports = (client) => {
     module.execute = async function execute(channel, user, msg, IsSelf, args) {
         if (user.username !== "tawan475") return client.say(channel, `${user.username}, You are not allowed to use this command.`);
         let amount = args[1] || args[0];
-        let toCheck = args[0];
+        let toCheck = args[0].toLowerCase();
 
         if (amount === toCheck){
             amount == args[0];
-            toCheck = user.username;
+            toCheck = user.username.toLowerCase();
         }
 
         amount = parseInt(amount);
