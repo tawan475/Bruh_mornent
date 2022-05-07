@@ -3,7 +3,7 @@ module.exports = (client) => {
     module.cooldown = 3000;
 
     module.execute = async function execute(channel, user, msg, IsSelf, args) {
-        let toCheck = args[0] || user.username.toLowerCase();
+        let toCheck = args[0].toLowerCase() || user.username.toLowerCase();
 
         let credit = await client.db.get("credit", toCheck);
         if (!credit) return client.say(channel, `${user.username}, No data for ${toCheck}.`);
